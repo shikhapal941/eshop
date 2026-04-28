@@ -1,5 +1,7 @@
 import SearchIcon from "@mui/icons-material/Search";
+import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import StorefrontIcon from "@mui/icons-material/Storefront";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -10,16 +12,31 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useAuth } from "../context/useAuth";
+import { useCart } from "../context/useCart";
 
-const SEARCH_INPUT_MIN_HEIGHT = 54;
+const SEARCH_INPUT_MIN_HEIGHT = window.innerHeight * 0.07;
+
+function userGreetingLabel(displayName: string | null, email: string | null) {
+  if (displayName?.trim()) {
+    return displayName.trim().split(/\s+/)[0] ?? "there";
+  }
+  if (email) {
+    return email.split("@")[0] ?? "there";
+  }
+  return "there";
+}
 
 function HeaderAccountLinks() {
+  const navigate = useNavigate();
+  const { itemCount, clearCart } = useCart();
+  const { user, signOutUser } = useAuth();
   return (
     <Stack
       sx={{
         flexDirection: "row",
         flexShrink: 0,
-        alignItems: "flex-start",
+        alignItems: "flex-end",
         gap: { xs: 2, sm: 3, md: 4 },
       }}
     >
@@ -34,26 +51,55 @@ function HeaderAccountLinks() {
             m: 0,
           }}
         >
-          Hello, guest
+          {user
+            ? `Hello, ${userGreetingLabel(user.displayName, user.email)}`
+            : "Hello, guest"}
         </Typography>
-        <Button
-          component="a"
-          href="#"
-          variant="text"
-          color="inherit"
-          sx={{
-            textTransform: "none",
-            p: 0,
-            minWidth: 0,
-            justifyContent: "flex-start",
-            fontWeight: 600,
-            fontSize: { xs: "0.9375rem", sm: "1rem", md: "1.0625rem" },
-            letterSpacing: "0.01em",
-            lineHeight: 1.2,
-          }}
-        >
-          Sign in
-        </Button>
+        {user ? (
+          <Button
+            type="button"
+            variant="text"
+            color="inherit"
+            onClick={() => {
+              void (async () => {
+                await signOutUser();
+                clearCart();
+                navigate("/login", { replace: true });
+              })();
+            }}
+            sx={{
+              textTransform: "none",
+              p: 0,
+              minWidth: 0,
+              justifyContent: "flex-start",
+              fontWeight: 600,
+              fontSize: { xs: "0.9375rem", sm: "1rem", md: "1.0625rem" },
+              letterSpacing: "0.01em",
+              lineHeight: 1.2,
+            }}
+          >
+            Sign out
+          </Button>
+        ) : (
+          <Button
+            component={RouterLink}
+            to="/login"
+            variant="text"
+            color="inherit"
+            sx={{
+              textTransform: "none",
+              p: 0,
+              minWidth: 0,
+              justifyContent: "flex-start",
+              fontWeight: 600,
+              fontSize: { xs: "0.9375rem", sm: "1rem", md: "1.0625rem" },
+              letterSpacing: "0.01em",
+              lineHeight: 1.2,
+            }}
+          >
+            Sign in
+          </Button>
+        )}
       </Stack>
 
       <Stack sx={{ minWidth: 0, gap: 0.5 }}>
@@ -88,11 +134,38 @@ function HeaderAccountLinks() {
           Shop
         </Button>
       </Stack>
+      <Stack sx={{ minWidth: 0, flexDirection: "row", alignItems: "center" }}>
+        <Button
+          component={RouterLink}
+          to="/checkout"
+          variant="text"
+          color="inherit"
+          startIcon={
+            <ShoppingBasketIcon
+              sx={{ fontSize: { xs: 22, sm: 24, md: 26 } }}
+            />
+          }
+          sx={{
+            textTransform: "none",
+            p: 0,
+            minWidth: 0,
+            fontWeight: 600,
+            fontSize: { xs: "0.9375rem", sm: "1rem", md: "1.0625rem" },
+            letterSpacing: "0.01em",
+            lineHeight: 1.2,
+            color: "common.white",
+            "& .MuiButton-startIcon": { ml: 0, mr: 0.5 },
+          }}
+          aria-label={`Cart, ${itemCount} items`}
+        >
+          {itemCount}
+        </Button>
+      </Stack>
     </Stack>
   );
 }
 
-export function Header() {
+export function Header() { 
   return (
     <AppBar
       position="static"
@@ -134,12 +207,18 @@ export function Header() {
             }}
           >
             <Stack
+              component={RouterLink}
+              to="/shop"
+              aria-label="eShop home"
               sx={{
                 flexDirection: "column",
                 flexShrink: 0,
                 alignItems: "center",
                 lineHeight: 1.15,
                 gap: 1,
+                textDecoration: "none",
+                color: "inherit",
+                cursor: "pointer",
               }}
             >
               <Box
