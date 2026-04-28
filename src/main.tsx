@@ -7,6 +7,9 @@ import { AuthProvider } from "./context/AuthProvider";
 import { CartProvider } from "./context/CartProvider";
 import "./index.css";
 import { theme } from "./theme";
+import { getFirebaseAnalytics } from "./lib/firebase";
+
+getFirebaseAnalytics();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -7,12 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+
 node_modules
 dist
 dist-ssr
 *.local
 .env
 .env.*.local
+
+# Firebase / GCP service account keys (use GitHub secret FIREBASE_SERVICE_ACCOUNT instead)
+*firebase-adminsdk*.json
 
 # Editor directories and files
 .vscode/*
