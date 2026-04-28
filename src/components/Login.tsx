@@ -318,7 +318,7 @@ export default function Login() {
             disabled={submitting}
             sx={secondaryButtonSx}
           >
-            Create your eShop Accountsdfsdfsdfsdfsfsdf
+            Create your eShop Account
           </Button>
         </Stack>
       </Card>
